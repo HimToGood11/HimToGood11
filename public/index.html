@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OSINT Recon - Discord/Roblox</title>
+    <style>
+        body { font-family: monospace; background: #1a1a1a; color: #00ff00; padding: 20px; }
+        input, button { background: #333; color: #00ff00; border: 1px solid #00ff00; padding: 10px; margin: 5px; }
+        .result { background: #000; padding: 15px; margin: 10px 0; border-left: 3px solid #00ff00; }
+        pre { white-space: pre-wrap; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ OSINT Recon Tool</h1>
+    
+    <div>
+        <input id="targetId" placeholder="Discord/Roblox User ID" style="width:300px">
+        <input id="email" placeholder="Target Email (optional)">
+        <button onclick="recon()">RUN RECON</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+    async function recon() {
+        const id = document.getElementById('targetId').value;
+        const email = document.getElementById('email').value;
+        const platform = id.includes('roblox') ? 'roblox' : 'discord'; // Auto-detect
+        
+        document.getElementById('results').innerHTML = '<div class="result">Running...</div>';
+        
+        try {
+            const res = await fetch(`/api/${platform}/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id, email})
+            });
+            const data = await res.json();
+            document.getElementById('results').innerHTML = `
+                <div class="result">
+                    <h3>${platform.toUpperCase()} Recon Results</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        } catch(e) {
+            document.getElementById('results').innerHTML = '<div class="result">Error: Invalid input</div>';
+        }
+    }
+    </script>
+</body>
+</html>
